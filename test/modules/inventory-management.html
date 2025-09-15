@@ -1,0 +1,102 @@
+<div class="inventory-management">
+    <div class="card">
+        <div class="card-header">
+            <h2>库存管理</h2>
+        </div>
+        
+        <div class="search-bar">
+            <input type="text" placeholder="搜索商品名称...">
+            <button class="search-btn">搜索</button>
+            <button class="restock-btn">批量补货</button>
+        </div>
+        
+        <div class="inventory-grid">
+            <div class="inventory-card">
+                <div class="product-image">
+                    <i class="fas fa-carrot"></i>
+                </div>
+                <div class="product-info">
+                    <div class="product-title">有机胡萝卜</div>
+                    <div class="inventory-meta">
+                        <span>SKU: VEG001</span>
+                        <span>分类: 蔬菜</span>
+                    </div>
+                    <div class="inventory-stock">
+                        <div class="stock-bar">
+                            <div class="stock-progress" style="width: 65%"></div>
+                        </div>
+                        <span class="stock-text">65/100</span>
+                    </div>
+                    <div class="inventory-actions">
+                        <button class="action-btn restock-btn">补货</button>
+                        <button class="action-btn adjust-btn">调整</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="inventory-card">
+                <div class="product-image">
+                    <i class="fas fa-apple-alt"></i>
+                </div>
+                <div class="product-info">
+                    <div class="product-title">红富士苹果</div>
+                    <div class="inventory-meta">
+                        <span>SKU: FRUIT001</span>
+                        <span>分类: 水果</span>
+                    </div>
+                    <div class="inventory-stock">
+                        <div class="stock-bar">
+                            <div class="stock-progress stock-low" style="width: 25%"></div>
+                        </div>
+                        <span class="stock-text">25/100</span>
+                    </div>
+                    <div class="inventory-actions">
+                        <button class="action-btn restock-btn">补货</button>
+                        <button class="action-btn adjust-btn">调整</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="inventory-card">
+                <div class="product-image">
+                    <i class="fas fa-egg"></i>
+                </div>
+                <div class="product-info">
+                    <div class="product-title">农家土鸡蛋</div>
+                    <div class="inventory-meta">
+                        <span>SKU: EGG001</span>
+                        <span>分类: 禽蛋</span>
+                    </div>
+                    <div class="inventory-stock">
+                        <div class="stock-bar">
+                            <div class="stock-progress stock-critical" style="width: 10%"></div>
+                        </div>
+                        <span class="stock-text">10/50</span>
+                    </div>
+                    <div class="inventory-actions">
+                        <button class="action-btn restock-btn">补货</button>
+                        <button class="action-btn adjust-btn">调整</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="inventory-alerts">
+            <div class="card-header">
+                <h2>库存预警</h2>
+            </div>
+            
+            <div class="alert-card">
+                <div class="alert-title">库存不足商品</div>
+                <div class="alert-item">
+                    <span class="alert-product">红富士苹果</span>
+                    <span class="alert-stock">剩余25 (预警值: 30)</span>
+                </div>
+                <div class="alert-item">
+                    <span class="alert-product">农家土鸡蛋</span>
+                    <span class="alert-stock">剩余10 (预警值: 15)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

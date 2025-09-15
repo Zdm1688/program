@@ -1,0 +1,112 @@
+.order-management .search-bar {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.order-management .search-bar input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.order-management .search-bar button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.order-management .search-bar .search-btn {
+    background: #3498db;
+    color: white;
+}
+
+.order-management .search-bar .filter-btn {
+    background: #9b59b6;
+    color: white;
+}
+
+.order-management .order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.order-management .order-table th, 
+.order-management .order-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.order-management .order-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.order-management .order-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.order-management .status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.order-management .status-paid {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.order-management .status-shipped {
+    background-color: #cce5ff;
+    color: #004085;
+}
+
+.order-management .status-delivered {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.order-management .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.order-management .page-btn {
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+}
+
+.order-management .page-btn:hover {
+    background: #f8f9fa;
+}
+
+.order-management .page-info {
+    font-size: 14px;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .order-management .search-bar {
+        flex-direction: column;
+    }
+    
+    .order-management .order-table {
+        display: block;
+        overflow-x: auto;
+    }
+}

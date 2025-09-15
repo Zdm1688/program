@@ -1,0 +1,58 @@
+.user-management .search-bar {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.user-management .search-bar input {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.user-management .search-bar button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.user-management .search-bar .search-btn {
+    background: #3498db;
+    color: white;
+}
+
+.user-management .search-bar .add-btn {
+    background: #4cd964;
+    color: white;
+}
+
+.user-management .user-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-management .user-table th, 
+.user-management .user-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.user-management .user-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.user-management .user-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+    .user-management .search-bar {
+        flex-direction: column;
+    }
+}

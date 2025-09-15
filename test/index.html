@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>农产品销售管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/base.css">
+</head>
+<body>
+    <!-- 左侧导航栏 -->
+    <aside class="sidebar">
+        <div class="logo">
+            <h1><i class="fas fa-leaf"></i> <span>农产品销售系统</span></h1>
+            <div class="toggle-sidebar">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+        
+        <ul class="nav-links">
+            <li><a href="index.html" class="active"><i class="fas fa-home"></i> <span>首页</span></a></li>
+            <li><a href="#" data-module="user-management"><i class="fas fa-users"></i> <span>用户管理</span></a></li>
+            <li><a href="#" data-module="product-management"><i class="fas fa-store"></i> <span>商品管理</span></a></li>
+            <li><a href="#" data-module="order-management"><i class="fas fa-shopping-cart"></i> <span>订单管理</span></a></li>
+            <li><a href="#" data-module="inventory-management"><i class="fas fa-box"></i> <span>库存管理</span></a></li>
+            <li><a href="#" data-module="promotion-management"><i class="fas fa-tag"></i> <span>促销活动</span></a></li>
+            <li><a href="#" data-module="statistics"><i class="fas fa-chart-bar"></i> <span>数据统计</span></a></li>
+            <li><a href="#" data-module="logistics"><i class="fas fa-truck"></i> <span>物流跟踪</span></a></li>
+        </ul>
+    </aside>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+        <div class="header">
+            <h2>农产品销售管理系统</h2>
+            <div class="user-info">
+                <div class="notifications">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <span>管理员</span>
+            </div>
+        </div>
+        
+        <div class="content">
+            <!-- 数据统计卡片 -->
+            <div class="stats-cards">
+                <div class="card stat-card">
+                    <div class="stat-icon" style="background-color: rgba(76, 217, 100, 0.2); color: #4cd964;">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-text">
+                        <h3>用户统计</h3>
+                        <h2>1,234</h2>
+                    </div>
+                </div>
+                
+                <div class="card stat-card">
+                    <div class="stat-icon" style="background-color: rgba(52, 152, 219, 0.2); color: #3498db;">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="stat-text">
+                        <h3>商品数量</h3>
+                        <h2>567</h2>
+                    </div>
+                </div>
+                
+                <div class="card stat-card">
+                    <div class="stat-icon" style="background-color: rgba(155, 89, 182, 0.2); color: #9b59b6;">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-text">
+                        <h3>今日订单</h3>
+                        <h2>89</h2>
+                    </div>
+                </div>
+                
+                <div class="card stat-card">
+                    <div class="stat-icon" style="background-color: rgba(241, 196, 15, 0.2); color: #f1c40f;">
+                        <i class="fas fa-yen-sign"></i>
+                    </div>
+                    <div class="stat-text">
+                        <h3>今日销售额</h3>
+                        <h2>¥12,456</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 快捷入口（已更新） -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>快捷入口</h2>
+                </div>
+                <div class="quick-actions">
+                    <div class="quick-action" data-module="product-management">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>添加商品</span>
+                    </div>
+                    <div class="quick-action" data-module="promotion-management">
+                        <i class="fas fa-tags"></i>
+                        <span>促销活动</span>
+                    </div>
+                    <div class="quick-action" data-module="order-management">
+                        <i class="fas fa-file-invoice"></i>
+                        <span>订单处理</span>
+                    </div>
+                    <div class="quick-action" data-module="statistics">
+                        <i class="fas fa-chart-line"></i>
+                        <span>销售报表</span>
+                    </div>
+                    <div class="quick-action" data-module="inventory-management">
+                        <i class="fas fa-box-open"></i>
+                        <span>库存管理</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="charts-container">
+                <!-- 报表统计 -->
+                <div class="chart-wrapper">
+                    <div class="card-header">
+                        <h2>农产品销售统计</h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- 系统公告和版本信息 -->
+                <div class="notice-board">
+                    <div class="card-header">
+                        <h2>系统公告</h2>
+                    </div>
+                    <ul class="notice-list">
+                        <li class="notice-item">
+                            <div>欢迎使用新版本农产品销售管理系统</div>
+                            <div class="notice-date">2023-10-15 09:30</div>
+                        </li>
+                        <li class="notice-item">
+                            <div>国庆节期间促销活动即将开始</div>
+                            <div class="notice-date">2023-09-28 14:15</div>
+                        </li>
+                        <li class="notice-item">
+                            <div>新增蔬菜品类供应商签约成功</div>
+                            <div class="notice-date">2023-09-20 11:45</div>
+                        </li>
+                        <li class="notice-item">
+                            <div>系统维护通知：本周六凌晨2-4点</div>
+                            <div class="notice-date">2023-09-15 16:20</div>
+                        </li>
+                    </ul>
+                    
+                    <div class="version-info">
+                        <p><strong>项目名称:</strong> 农产品销售管理系统</p>
+                        <p><strong>当前版本:</strong> v1.0.0</p>
+                        <p><strong>主要特色:</strong> 清爽/极简</p>
+                        <p><strong>开发者:</strong> 2413043246 张达铭</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 基础功能脚本
+        document.addEventListener('DOMContentLoaded', function() {
+            // 侧边栏折叠功能
+            const toggleSidebar = document.querySelector('.toggle-sidebar');
+            const sidebar = document.querySelector('.sidebar');
+            
+            if (toggleSidebar && sidebar) {
+                toggleSidebar.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                    
+                    if (sidebar.classList.contains('collapsed')) {
+                        toggleSidebar.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                    } else {
+                        toggleSidebar.innerHTML = '<i class="fas fa-bars"></i>';
+                    }
+                });
+            }
+            
+            // 初始化图表
+            const ctx = document.getElementById('salesChart');
+            if (ctx) {
+                const salesChart = new Chart(ctx.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['蔬菜', '水果', '粮油', '禽蛋', '肉类', '其他'],
+                        datasets: [{
+                            data: [30, 25, 15, 12, 10, 8],
+                            backgroundColor: [
+                                '#4cd964',
+                                '#3498db',
+                                '#9b59b6',
+                                '#e74c3c',
+                                '#f1c40f',
+                                '#34495e'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                            },
+                            title: {
+                                display: true,
+                                text: '各类农产品销售占比'
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 快捷入口点击事件
+            document.querySelectorAll('.quick-action').forEach(action => {
+                action.addEventListener('click', function() {
+                    const moduleName = this.getAttribute('data-module');
+                    if (moduleName) {
+                        // 更新导航激活状态
+                        document.querySelectorAll('.nav-links a').forEach(link => {
+                            link.classList.remove('active');
+                        });
+                        document.querySelector(`.nav-links a[data-module="${moduleName}"]`).classList.add('active');
+                        
+                        // 加载对应模块
+                        loadModule(moduleName);
+                    }
+                });
+            });
+            
+            // 模块加载函数
+            function loadModule(moduleName) {
+                // 显示加载中状态
+                document.querySelector('.content').innerHTML = `
+                    <div class="card" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 20px;"></i>
+                        <h2>加载中...</h2>
+                    </div>
+                `;
+                
+                // 加载模块内容
+                fetch(`modules/${moduleName}.html`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('模块文件未找到');
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        document.querySelector('.content').innerHTML = html;
+                        
+                        // 加载模块特定CSS
+                        const cssLink = document.createElement('link');
+                        cssLink.rel = 'stylesheet';
+                        cssLink.href = `css/modules/${moduleName}.css`;
+                        document.head.appendChild(cssLink);
+                        
+                        // 加载模块特定JS
+                        const jsScript = document.createElement('script');
+                        jsScript.src = `js/modules/${moduleName}.js`;
+                        document.body.appendChild(jsScript);
+                    })
+                    .catch(error => {
+                        console.error('模块加载失败:', error);
+                        document.querySelector('.content').innerHTML = `
+                            <div class="card" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 24px; color: #e74c3c; margin-bottom: 20px;"></i>
+                                <h2>模块加载失败</h2>
+                                <p>无法加载 ${moduleName} 模块，请检查文件路径是否正确。</p>
+                                <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                    重新加载
+                                </button>
+                            </div>
+                        `;
+                    });
+            }
+            
+            // 导航链接点击事件
+            document.querySelectorAll('.nav-links a[data-module]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const moduleName = this.getAttribute('data-module');
+                    
+                    // 更新导航激活状态
+                    document.querySelectorAll('.nav-links a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // 加载对应模块
+                    loadModule(moduleName);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

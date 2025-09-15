@@ -1,0 +1,200 @@
+<div class="statistics">
+    <div class="card">
+        <div class="card-header">
+            <h2>数据统计</h2>
+            <div class="date-range">
+                <select class="time-select">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month" selected>本月</option>
+                    <option value="quarter">本季度</option>
+                    <option value="year">本年</option>
+                    <option value="custom">自定义</option>
+                </select>
+                <div class="custom-range" style="display:none;">
+                    <input type="date" class="start-date">
+                    <span>至</span>
+                    <input type="date" class="end-date">
+                    <button class="confirm-range">确定</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-tabs">
+            <button class="tab-btn active" data-tab="sales">销售统计</button>
+            <button class="tab-btn" data-tab="users">用户分析</button>
+            <button class="tab-btn" data-tab="products">商品分析</button>
+        </div>
+        
+        <!-- 销售统计 -->
+        <div class="tab-content active" data-tab="sales">
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-yen-sign"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">总销售额</div>
+                        <div class="stat-value">¥12,456</div>
+                        <div class="stat-change up">
+                            <i class="fas fa-arrow-up"></i> 12.5% 较上月
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">订单总数</div>
+                        <div class="stat-value">89</div>
+                        <div class="stat-change up">
+                            <i class="fas fa-arrow-up"></i> 8.3% 较上月
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">新用户数</div>
+                        <div class="stat-value">24</div>
+                        <div class="stat-change down">
+                            <i class="fas fa-arrow-down"></i> 5.2% 较上月
+                        </div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-info">
+                        <div class="stat-title">商品销量</div>
+                        <div class="stat-value">356</div>
+                        <div class="stat-change up">
+                            <i class="fas fa-arrow-up"></i> 15.7% 较上月
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="salesTrendChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="categoryDistributionChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- 用户分析 -->
+        <div class="tab-content" data-tab="users">
+            <div class="chart-container">
+                <canvas id="userGrowthChart"></canvas>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="userSourceChart"></canvas>
+            </div>
+            
+            <div class="user-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>用户ID</th>
+                            <th>用户名</th>
+                            <th>注册时间</th>
+                            <th>订单数</th>
+                            <th>消费金额</th>
+                            <th>最近登录</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1001</td>
+                            <td>张三</td>
+                            <td>2023-09-15</td>
+                            <td>5</td>
+                            <td>¥568</td>
+                            <td>2023-10-14</td>
+                        </tr>
+                        <tr>
+                            <td>1002</td>
+                            <td>李四</td>
+                            <td>2023-09-20</td>
+                            <td>3</td>
+                            <td>¥328</td>
+                            <td>2023-10-12</td>
+                        </tr>
+                        <tr>
+                            <td>1003</td>
+                            <td>王五</td>
+                            <td>2023-10-01</td>
+                            <td>2</td>
+                            <td>¥156</td>
+                            <td>2023-10-15</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 商品分析 -->
+        <div class="tab-content" data-tab="products">
+            <div class="chart-container">
+                <canvas id="productSalesChart"></canvas>
+            </div>
+            
+            <div class="product-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>商品名称</th>
+                            <th>销量</th>
+                            <th>销售额</th>
+                            <th>库存</th>
+                            <th>转化率</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>有机胡萝卜</td>
+                            <td>156</td>
+                            <td>¥1,872</td>
+                            <td>45</td>
+                            <td>12.5%</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>红富士苹果</td>
+                            <td>128</td>
+                            <td>¥1,152</td>
+                            <td>78</td>
+                            <td>10.3%</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>农家土鸡蛋</td>
+                            <td>89</td>
+                            <td>¥890</td>
+                            <td>12</td>
+                            <td>8.7%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="export-actions">
+            <button class="export-btn">
+                <i class="fas fa-file-excel"></i> 导出Excel
+            </button>
+            <button class="export-btn">
+                <i class="fas fa-file-pdf"></i> 导出PDF
+            </button>
+        </div>
+    </div>
+</div>
