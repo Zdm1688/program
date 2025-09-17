@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>支付管理 - 农产品销售管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/css/layui.min.css">
+    <style>
+        /* 共用样式部分与前六个模块保持一致 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 20px 0;
+        }
+        .logo {
+            text-align: center;
+            padding: 15px 0;
+            font-size: 22px;
+            font-weight: bold;
+            border-bottom: 1px solid #3c546c;
+            margin-bottom: 20px;
+        }
+        .nav-menu {
+            list-style: none;
+        }
+        .nav-menu li {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .nav-menu li i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .nav-menu li:hover {
+            background-color: #34495e;
+        }
+        .nav-menu li.active {
+            background-color: #1abc9c;
+            border-left: 4px solid #16a085;
+        }
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #1abc9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .user-name {
+            font-weight: bold;
+        }
+        .dropdown-icon {
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 150px;
+            padding: 10px 0;
+            display: none;
+            z-index: 100;
+        }
+        .user-dropdown a {
+            display: block;
+            padding: 8px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .user-dropdown a:hover {
+            background-color: #f5f5f5;
+            color: #1abc9c;
+        }
+        .user-info:hover .dropdown-icon {
+            transform: rotate(180deg);
+        }
+        .user-info:hover .user-dropdown {
+            display: block;
+        }
+        
+        /* 支付管理特定样式 */
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .filter-box {
+            display: flex;
+            align-items: center;
+        }
+        .filter-select {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+            width: 180px;
+        }
+        .btn {
+            padding: 8px 15px;
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background-color: #16a085;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .payment-table {
+            width: 100%;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.8fr;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+        }
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.8fr;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s;
+        }
+        .table-row:hover {
+            background-color: #f9f9f9;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .status-success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-pending {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+        .status-failed {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .status-refund {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        .action-btn {
+            color: #1abc9c;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .action-btn:hover {
+            text-decoration: underline;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .page-btn {
+            padding: 6px 12px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .page-btn.active {
+            background-color: #1abc9c;
+            color: white;
+            border-color: #1abc9c;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            width: 700px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+        .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .modal-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .payment-detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .payment-detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .payment-method {
+            border: 2px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .payment-method:hover {
+            border-color: #1abc9c;
+        }
+        .payment-method.active {
+            border-color: #1abc9c;
+            background-color: #f8ffff;
+        }
+        .payment-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #1abc9c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <div class="logo">农产品销售系统</div>
+            <ul class="nav-menu">
+                <li><i class="layui-icon layui-icon-home"></i> 首页</li>
+                <li><i class="layui-icon layui-icon-user"></i> 用户管理</li>
+                <li><i class="layui-icon layui-icon-cart"></i> 商品管理</li>
+                <li><i class="layui-icon layui-icon-form"></i> 订单管理</li>
+                <li><i class="layui-icon layui-icon-template-1"></i> 库存管理</li>
+                <li><i class="layui-icon layui-icon-dollar"></i> 促销活动</li>
+                <li><i class="layui-icon layui-icon-chart"></i> 数据统计</li>
+                <li class="active"><i class="layui-icon layui-icon-transfer"></i> 支付管理</li>
+                <li><i class="layui-icon layui-icon-service"></i> 客户服务</li>
+                <li><i class="layui-icon layui-icon-car"></i> 物流跟踪</li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <h2>支付管理</h2>
+                <div class="user-info">
+                    <div class="user-avatar">张</div>
+                    <div class="user-name">张达铭</div>
+                    <div class="dropdown-icon">▼</div>
+                    <div class="user-dropdown">
+                        <a href="#" onclick="switchUser()">切换用户</a>
+                        <a href="#" onclick="logout()">退出登录</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 支付管理模块内容 -->
+            <div class="module-header">
+                <div class="filter-box">
+                    <select class="filter-select">
+                        <option value="">全部状态</option>
+                        <option value="success">支付成功</option>
+                        <option value="pending">待支付</option>
+                        <option value="failed">支付失败</option>
+                        <option value="refund">已退款</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">全部支付方式</option>
+                        <option value="wechat">微信支付</option>
+                        <option value="alipay">支付宝</option>
+                        <option value="bank">银行卡</option>
+                    </select>
+                    <input type="text" class="filter-select" placeholder="订单号/支付单号">
+                    <input type="date" class="filter-select">
+                    <button class="btn">筛选</button>
+                </div>
+                <button class="btn" onclick="exportPayments()">导出记录</button>
+            </div>
+
+            <div class="payment-table">
+                <div class="table-header">
+                    <div>支付单号</div>
+                    <div>订单信息</div>
+                    <div>支付金额</div>
+                    <div>支付方式</div>
+                    <div>支付状态</div>
+                    <div>操作</div>
+                </div>
+                
+                <div class="table-row">
+                    <div>PAY20230501001</div>
+                    <div>
+                        <div>ORD20230501001</div>
+                        <div style="font-size: 12px; color: #95a5a6;">张达铭</div>
+                    </div>
+                    <div>¥31.1</div>
+                    <div>微信支付</div>
+                    <div><span class="status-badge status-success">支付成功</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showPaymentDetail('PAY20230501001')">详情</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>PAY20230502003</div>
+                    <div>
+                        <div>ORD20230502003</div>
+                        <div style="font-size: 12px; color: #95a5a6;">李四</div>
+                    </div>
+                    <div>¥129.0</div>
+                    <div>支付宝</div>
+                    <div><span class="status-badge status-success">支付成功</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showPaymentDetail('PAY20230502003')">详情</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>PAY20230503005</div>
+                    <div>
+                        <div>ORD20230503005</div>
+                        <div style="font-size: 12px; color: #95a5a6;">王五</div>
+                    </div>
+                    <div>¥28.0</div>
+                    <div>微信支付</div>
+                    <div><span class="status-badge status-pending">待支付</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showPaymentDetail('PAY20230503005')">详情</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>PAY20230504007</div>
+                    <div>
+                        <div>ORD20230504007</div>
+                        <div style="font-size: 12px; color: #95a5a6;">赵六</div>
+                    </div>
+                    <div>¥26.0</div>
+                    <div>银行卡</div>
+                    <div><span class="status-badge status-failed">支付失败</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showPaymentDetail('PAY20230504007')">详情</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>PAY20230505009</div>
+                    <div>
+                        <div>ORD20230505009</div>
+                        <div style="font-size: 12px; color: #95a5a6;">钱七</div>
+                    </div>
+                    <div>¥148.8</div>
+                    <div>支付宝</div>
+                    <div><span class="status-badge status-refund">已退款</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showPaymentDetail('PAY20230505009')">详情</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination">
+                <div class="page-btn">上一页</div>
+                <div class="page-btn active">1</div>
+                <div class="page-btn">2</div>
+                <div class="page-btn">3</div>
+                <div class="page-btn">下一页</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 支付详情模态框 -->
+    <div class="modal" id="paymentDetailModal">
+        <div class="modal-content">
+            <h2 class="modal-title">支付详情 <span style="font-size: 14px; color: #95a5a6; font-weight: normal;">PAY20230501001</span></h2>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">订单号：</span>
+                <span>ORD20230501001</span>
+            </div>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">客户信息：</span>
+                <span>
+                    <div>张达铭</div>
+                    <div style="font-size: 12px; color: #95a5a6;">13800138000</div>
+                </span>
+            </div>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">支付金额：</span>
+                <span style="font-weight: bold; color: #e65100;">¥31.1</span>
+            </div>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">支付方式：</span>
+                <span>微信支付</span>
+            </div>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">支付状态：</span>
+                <span><span class="status-badge status-success">支付成功</span></span>
+            </div>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">支付时间：</span>
+                <span>2025-05-01 10:25:30</span>
+            </div>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">交易流水号：</span>
+                <span>4200002025050123456789012345</span>
+            </div>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">支付渠道：</span>
+                <span>微信支付-扫码支付</span>
+            </div>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">商品信息：</span>
+                <span>
+                    <div>有机苹果 ×2</div>
+                    <div>新鲜菠菜 ×1</div>
+                </span>
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('paymentDetailModal')">关闭</button>
+                <button class="btn" onclick="printPayment('PAY20230501001')">打印凭证</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 退款处理模态框 -->
+    <div class="modal" id="refundModal">
+        <div class="modal-content">
+            <h2 class="modal-title">退款处理</h2>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">支付单号：</span>
+                <span>PAY20230505009</span>
+            </div>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">订单金额：</span>
+                <span>¥148.8</span>
+            </div>
+            
+            <div class="payment-detail-item">
+                <span class="payment-detail-label">可退金额：</span>
+                <span style="font-weight: bold; color: #e65100;">¥148.8</span>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">退款金额</label>
+                <input type="number" class="form-input" value="148.8">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">退款原因</label>
+                <select class="form-select">
+                    <option value="">请选择退款原因</option>
+                    <option value="cancel">订单取消</option>
+                    <option value="quality">商品质量问题</option>
+                    <option value="wrong">商品发错/漏发</option>
+                    <option value="other">其他原因</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">退款说明</label>
+                <textarea class="form-textarea" placeholder="请输入退款说明"></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('refundModal')">取消</button>
+                <button class="btn" style="background-color: #e74c3c;">确认退款</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 支付配置模态框 -->
+    <div class="modal" id="paymentConfigModal">
+        <div class="modal-content">
+            <h2 class="modal-title">支付方式配置</h2>
+            
+            <div class="payment-methods">
+                <div class="payment-method active">
+                    <div class="payment-icon">💰</div>
+                    <div>微信支付</div>
+                    <div style="font-size: 12px; color: #95a5a6;">已启用</div>
+                </div>
+                <div class="payment-method">
+                    <div class="payment-icon">💳</div>
+                    <div>支付宝</div>
+                    <div style="font-size: 12px; color: #95a5a6;">已启用</div>
+                </div>
+                <div class="payment-method">
+                    <div class="payment-icon">🏦</div>
+                    <div>银行卡</div>
+                    <div style="font-size: 12px; color: #95a5a6;">未启用</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">微信支付配置</label>
+                <input type="text" class="form-input" placeholder="商户号">
+                <input type="text" class="form-input" placeholder="API密钥" style="margin-top: 10px;">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">支付宝配置</label>
+                <input type="text" class="form-input" placeholder="应用ID">
+                <input type="text" class="form-input" placeholder="商户私钥" style="margin-top: 10px;">
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('paymentConfigModal')">取消</button>
+                <button class="btn">保存配置</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/layui.js"></script>
+    <script>
+        // 显示支付详情模态框
+        function showPaymentDetail(paymentId) {
+            // 在实际应用中，这里会根据paymentId加载支付数据
+            document.getElementById('paymentDetailModal').style.display = 'flex';
+        }
+        function switchUser() {
+            if(confirm('确定要切换用户吗？')) {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // 退出登录
+        function logout() {
+            if(confirm('确定要退出登录吗？')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 显示退款模态框
+        function showRefundModal(paymentId) {
+            // 在实际应用中，这里会根据paymentId加载退款数据
+            document.getElementById('refundModal').style.display = 'flex';
+        }
+        
+        // 显示支付配置模态框
+        function showPaymentConfig() {
+            document.getElementById('paymentConfigModal').style.display = 'flex';
+        }
+        
+        // 导出支付记录
+        function exportPayments() {
+            alert('支付记录导出功能将在新窗口打开');
+            // 实际应用中这里会调用导出API
+        }
+        
+        // 打印支付凭证
+        function printPayment(paymentId) {
+            alert('打印支付凭证: ' + paymentId);
+            // 实际应用中这里会调用打印功能
+        }
+        
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // 点击模态框外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+        });
+        
+        // 支付方式选择
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                document.querySelectorAll('.payment-method').forEach(m => {
+                    m.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+        
+        // 导航菜单点击事件
+        document.querySelectorAll('.nav-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-menu li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // 在实际应用中，这里会根据点击的菜单项加载对应模块
+                if (this.textContent.includes('首页')) {
+                    window.location.href = 'index.html';
+                } else if (this.textContent.includes('用户管理')) {
+                    window.location.href = 'member_management.html';
+                } else if (this.textContent.includes('商品管理')) {
+                    window.location.href = 'goods_management.html';
+                } else if (this.textContent.includes('订单管理')) {
+                    window.location.href = 'order_management.html';
+                } else if (this.textContent.includes('库存管理')) {
+                    window.location.href = 'stock_management.html';
+                } else if (this.textContent.includes('促销活动')) {
+                    window.location.href = 'promotion_management.html';
+                } else if (this.textContent.includes('数据统计')) {
+                    window.location.href = 'data_statistics.html';
+                }else if (this.textContent.includes('支付管理')) {
+                    window.location.href = 'payment_management.html';
+                }else if (this.textContent.includes('客户服务')) {
+                    window.location.href = 'customer_service.html';
+                }else if (this.textContent.includes('物流跟踪')) {
+                    window.location.href = 'logistics_tracking.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物流跟踪 - 农产品销售管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/css/layui.min.css">
+    <style>
+        /* 共用样式部分 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 20px 0;
+        }
+        .logo {
+            text-align: center;
+            padding: 15px 0;
+            font-size: 22px;
+            font-weight: bold;
+            border-bottom: 1px solid #3c546c;
+            margin-bottom: 20px;
+        }
+        .nav-menu {
+            list-style: none;
+        }
+        .nav-menu li {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .nav-menu li i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .nav-menu li:hover {
+            background-color: #34495e;
+        }
+        .nav-menu li.active {
+            background-color: #1abc9c;
+            border-left: 4px solid #16a085;
+        }
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #1abc9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .user-name {
+            font-weight: bold;
+        }
+        .dropdown-icon {
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 150px;
+            padding: 10px 0;
+            display: none;
+            z-index: 100;
+        }
+        .user-dropdown a {
+            display: block;
+            padding: 8px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .user-dropdown a:hover {
+            background-color: #f5f5f5;
+            color: #1abc9c;
+        }
+        .user-info:hover .dropdown-icon {
+            transform: rotate(180deg);
+        }
+        .user-info:hover .user-dropdown {
+            display: block;
+        }
+        
+        /* 物流跟踪特定样式 */
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+        }
+        .search-input {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+            width: 250px;
+        }
+        .btn {
+            padding: 8px 15px;
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background-color: #16a085;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .logistics-table {
+            width: 100%;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.8fr;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+        }
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr 0.8fr;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s;
+        }
+        .table-row:hover {
+            background-color: #f9f9f9;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .status-pending {
+            background-color: #fff3e0;
+            color: #e65100;
+        }
+        .status-shipped {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        .status-transit {
+            background-color: #fff9c4;
+            color: #f57c00;
+        }
+        .status-delivered {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-problem {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .action-btn {
+            color: #1abc9c;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .action-btn:hover {
+            text-decoration: underline;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .page-btn {
+            padding: 6px 12px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .page-btn.active {
+            background-color: #1abc9c;
+            color: white;
+            border-color: #1abc9c;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            width: 800px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+        .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .modal-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .tracking-timeline {
+            margin-top: 20px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .timeline-item {
+            position: relative;
+            padding: 15px 0;
+            border-left: 2px solid #1abc9c;
+            margin-left: 20px;
+        }
+        .timeline-item:last-child {
+            border-left: 2px solid #ddd;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #1abc9c;
+        }
+        .timeline-content {
+            margin-left: 10px;
+        }
+        .timeline-time {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-bottom: 5px;
+        }
+        .timeline-desc {
+            font-weight: 500;
+        }
+        .timeline-location {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        .logistics-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        /* 登录模态框样式 */
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .login-content {
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            width: 400px;
+            max-width: 90%;
+        }
+        .login-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        /* 用户切换模态框样式 */
+        .user-list {
+            margin-top: 15px;
+        }
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .user-item:hover {
+            background-color: #f5f5f5;
+        }
+        .user-item-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #1abc9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <div class="logo">农产品销售系统</div>
+            <ul class="nav-menu">
+                <li onclick="navigateTo('index.html')"><i class="layui-icon layui-icon-home"></i> 首页</li>
+                <li onclick="navigateTo('member_management.html')"><i class="layui-icon layui-icon-user"></i> 用户管理</li>
+                <li onclick="navigateTo('goods_management.html')"><i class="layui-icon layui-icon-cart"></i> 商品管理</li>
+                <li onclick="navigateTo('order_management.html')"><i class="layui-icon layui-icon-form"></i> 订单管理</li>
+                <li onclick="navigateTo('stock_management.html')"><i class="layui-icon layui-icon-template-1"></i> 库存管理</li>
+                <li onclick="navigateTo('promotion_management.html')"><i class="layui-icon layui-icon-dollar"></i> 促销活动</li>
+                <li onclick="navigateTo('data_statistics.html')"><i class="layui-icon layui-icon-chart"></i> 数据统计</li>
+                <li onclick="navigateTo('payment_management.html')"><i class="layui-icon layui-icon-transfer"></i> 支付管理</li>
+                <li onclick="navigateTo('customer_service.html')"><i class="layui-icon layui-icon-service"></i> 客户服务</li>
+                <li class="active"><i class="layui-icon layui-icon-car"></i> 物流跟踪</li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <h2>物流跟踪</h2>
+                <div class="user-info">
+                    <div class="user-avatar" id="currentUserAvatar">张</div>
+                    <div class="user-name" id="currentUserName">张达铭</div>
+                    <div class="dropdown-icon">▼</div>
+                    <div class="user-dropdown">
+                        <a href="#" onclick="switchUser()">切换用户</a>
+                        <a href="#" onclick="logout()">退出登录</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 物流跟踪模块内容 -->
+            <div class="module-header">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="输入订单号或物流单号">
+                    <button class="btn">查询</button>
+                </div>
+                <button class="btn" onclick="showAddLogisticsModal()">新增发货</button>
+            </div>
+
+            <div class="logistics-table">
+                <div class="table-header">
+                    <div>物流单号</div>
+                    <div>订单信息</div>
+                    <div>物流公司</div>
+                    <div>发货时间</div>
+                    <div>物流状态</div>
+                    <div>操作</div>
+                </div>
+                
+                <div class="table-row">
+                    <div>SF1234567890</div>
+                    <div>
+                        <div>ORD20230501001</div>
+                        <div style="font-size: 12px; color: #95a5a6;">张达铭</div>
+                    </div>
+                    <div>顺丰速运</div>
+                    <div>2025-05-02 15:30</div>
+                    <div><span class="status-badge status-delivered">已签收</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showLogisticsDetail('SF1234567890')">详情</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>YT9876543210</div>
+                    <div>
+                        <div>ORD20230502003</div>
+                        <div style="font-size: 12px; color: #95a5a6;">李四</div>
+                    </div>
+                    <div>圆通速递</div>
+                    <div>2025-05-03 10:15</div>
+                    <div><span class="status-badge status-transit">运输中</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showLogisticsDetail('YT9876543210')">详情</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>ZT1234567890</div>
+                    <div>
+                        <div>ORD20230503005</div>
+                        <div style="font-size: 12px; color: #95a5a6;">王五</div>
+                    </div>
+                    <div>中通快递</div>
+                    <div>2025-05-04 09:20</div>
+                    <div><span class="status-badge status-shipped">已发货</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showLogisticsDetail('ZT1234567890')">详情</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>ST1234567890</div>
+                    <div>
+                        <div>ORD20230504007</div>
+                        <div style="font-size: 12px; color: #95a5a6;">赵六</div>
+                    </div>
+                    <div>申通快递</div>
+                    <div>2025-05-05 14:40</div>
+                    <div><span class="status-badge status-pending">待发货</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showLogisticsDetail('ST1234567890')">详情</span>
+                        <span class="action-btn" onclick="updateLogistics('ST1234567890')">更新</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>JD1234567890</div>
+                    <div>
+                        <div>ORD20230505009</div>
+                        <div style="font-size: 12px; color: #95a5a6;">钱七</div>
+                    </div>
+                    <div>京东物流</div>
+                    <div>2025-05-06 11:25</div>
+                    <div><span class="status-badge status-problem">异常</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showLogisticsDetail('JD1234567890')">详情</span>
+                        <span class="action-btn" onclick="updateLogistics('JD1234567890')">处理</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination">
+                <div class="page-btn">上一页</div>
+                <div class="page-btn active">1</div>
+                <div class="page-btn">2</div>
+                <div class="page-btn">3</div>
+                <div class="page-btn">下一页</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 物流详情模态框 -->
+    <div class="modal" id="logisticsDetailModal">
+        <div class="modal-content">
+            <h2 class="modal-title">物流详情 <span style="font-size: 14px; color: #95a5a6; font-weight: normal;">SF1234567890</span></h2>
+            
+            <div class="logistics-info">
+                <div class="info-card">
+                    <div class="info-title">订单信息</div>
+                    <div>订单号: ORD20230501001</div>
+                    <div>客户: 张达铭 (13800138000)</div>
+                    <div>商品: 有机苹果 ×2, 新鲜菠菜 ×1</div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-title">物流信息</div>
+                    <div>物流公司: 顺丰速运</div>
+                    <div>物流单号: SF1234567890</div>
+                    <div>发货时间: 2025-05-02 15:30</div>
+                    <div>签收时间: 2025-05-03 16:45</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-title">收货地址</div>
+                <div>北京市朝阳区建国路88号 100025</div>
+                <div>收货人: 张达铭 13800138000</div>
+            </div>
+
+            <div class="tracking-timeline">
+                <h3 style="margin-bottom: 20px;">物流轨迹</h3>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">2025-05-03 16:45</div>
+                        <div class="timeline-desc">已签收，签收人：本人</div>
+                        <div class="timeline-location">北京市朝阳区建国路网点</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">2025-05-03 14:20</div>
+                        <div class="timeline-desc">派送中</div>
+                        <div class="timeline-location">北京市朝阳区建国路网点</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">2025-05-03 10:15</div>
+                        <div class="timeline-desc">到达目的地网点</div>
+                        <div class="timeline-location">北京市朝阳区建国路网点</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">2025-05-02 22:30</div>
+                        <div class="timeline-desc">运输中</div>
+                        <div class="timeline-location">北京市转运中心</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">2025-05-02 18:45</div>
+                        <div class="timeline-desc">已发车</div>
+                        <div class="timeline-location">山东烟台发货仓库</div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">2025-05-02 15:30</div>
+                        <div class="timeline-desc">已揽收</div>
+                        <div class="timeline-location">山东烟台发货仓库</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('logisticsDetailModal')">关闭</button>
+                <button class="btn" onclick="printTracking('SF1234567890')">打印运单</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增发货模态框 -->
+    <div class="modal" id="addLogisticsModal">
+        <div class="modal-content">
+            <h2 class="modal-title">新增发货信息</h2>
+            
+            <div class="form-group">
+                <label class="form-label">选择订单</label>
+                <select class="form-select">
+                    <option value="">请选择需要发货的订单</option>
+                    <option value="ORD20230504007">ORD20230504007 - 赵六 (新鲜菠菜 ×2, 土鸡蛋 ×1)</option>
+                    <option value="ORD20230505009">ORD20230505009 - 钱七 (有机苹果 ×1, 野生蜂蜜 ×2)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">物流公司</label>
+                <select class="form-select">
+                    <option value="">请选择物流公司</option>
+                    <option value="sf">顺丰速运</option>
+                    <option value="yt">圆通速递</option>
+                    <option value="zt">中通快递</option>
+                    <option value="st">申通快递</option>
+                    <option value="yd">韵达快递</option>
+                    <option value="jd">京东物流</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">物流单号</label>
+                <input type="text" class="form-input" placeholder="请输入物流单号">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">发货时间</label>
+                <input type="datetime-local" class="form-input">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">发货备注</label>
+                <textarea class="form-textarea" placeholder="请输入发货备注信息"></textarea>
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('addLogisticsModal')">取消</button>
+                <button class="btn">确认发货</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 更新物流模态框 -->
+    <div class="modal" id="updateLogisticsModal">
+        <div class="modal-content">
+            <h2 class="modal-title">更新物流信息</h2>
+            
+            <div class="form-group">
+                <label class="form-label">物流单号</label>
+                <input type="text" class="form-input" value="JD1234567890" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">当前状态</label>
+                <select class="form-select">
+                    <option value="pending">待发货</option>
+                    <option value="shipped">已发货</option>
+                    <option value="transit">运输中</option>
+                    <option value="delivered">已签收</option>
+                    <option value="problem" selected>异常</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">异常原因</label>
+                <select class="form-select">
+                    <option value="">请选择异常原因</option>
+                    <option value="damage">包裹破损</option>
+                    <option value="lost">包裹丢失</option>
+                    <option value="delay">配送延迟</option>
+                    <option value="address">地址错误</option>
+                    <option value="other">其他原因</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">处理说明</label>
+                <textarea class="form-textarea" placeholder="请输入处理说明"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">预计解决时间</label>
+                <input type="datetime-local" class="form-input">
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('updateLogisticsModal')">取消</button>
+                <button class="btn">确认更新</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 切换用户模态框 -->
+    <div class="modal" id="switchUserModal">
+        <div class="modal-content">
+            <h2 class="modal-title">切换用户</h2>
+            
+            <div class="user-list">
+                <div class="user-item" onclick="switchUser('张达铭', '张')">
+                    <div class="user-item-avatar">张</div>
+                    <div>
+                        <div>张达铭</div>
+                        <div style="font-size: 12px; color: #95a5a6;">系统管理员</div>
+                    </div>
+                </div>
+                
+                <div class="user-item" onclick="switchUser('李四', '李')">
+                    <div class="user-item-avatar">李</div>
+                    <div>
+                        <div>李四</div>
+                        <div style="font-size: 12px; color: #95a5a6;">订单管理员</div>
+                    </div>
+                </div>
+                
+                <div class="user-item" onclick="switchUser('王五', '王')">
+                    <div class="user-item-avatar">王</div>
+                    <div>
+                        <div>王五</div>
+                        <div style="font-size: 12px; color: #95a5a6;">库存管理员</div>
+                    </div>
+                </div>
+                
+                <div class="user-item" onclick="switchUser('赵六', '赵')">
+                    <div class="user-item-avatar">赵</div>
+                    <div>
+                        <div>赵六</div>
+                        <div style="font-size: 12px; color: #95a5a6;">客服专员</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('switchUserModal')">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录模态框 -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-content">
+            <h2 class="login-title">用户登录</h2>
+            
+            <div class="form-group">
+                <label class="form-label">用户名</label>
+                <input type="text" class="form-input" id="loginUsername" placeholder="请输入用户名">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">密码</label>
+                <input type="password" class="form-input" id="loginPassword" placeholder="请输入密码">
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('loginModal')">取消</button>
+                <button class="btn" onclick="performLogin()">登录</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/layui.js"></script>
+    <script>
+        // 页面跳转功能 - 与文档1保持一致
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        // 切换用户 - 与文档1保持一致
+        function switchUser() {
+            if(confirm('确定要切换用户吗？')) {
+                document.getElementById('switchUserModal').style.display = 'flex';
+            }
+        }
+        
+        // 退出登录 - 与文档1保持一致
+        function logout() {
+            if(confirm('确定要退出登录吗？')) {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // 显示物流详情模态框
+        function showLogisticsDetail(trackingNumber) {
+            // 在实际应用中，这里会根据trackingNumber加载物流数据
+            document.getElementById('logisticsDetailModal').style.display = 'flex';
+        }
+        
+        // 显示新增发货模态框
+        function showAddLogisticsModal() {
+            document.getElementById('addLogisticsModal').style.display = 'flex';
+        }
+        
+        // 显示更新物流模态框
+        function updateLogistics(trackingNumber) {
+            // 在实际应用中，这里会根据trackingNumber加载物流数据
+            document.getElementById('updateLogisticsModal').style.display = 'flex';
+        }
+        
+        // 打印运单
+        function printTracking(trackingNumber) {
+            alert('打印运单: ' + trackingNumber);
+            // 实际应用中这里会调用打印功能
+        }
+        
+        // 切换用户
+        function switchUser() {
+            if(confirm('确定要切换用户吗？')) {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // 执行登录
+        function performLogin() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                layui.layer.msg('请输入用户名和密码', {icon: 2});
+                return;
+            }
+            
+            // 模拟登录成功
+            const initial = username.charAt(0);
+            document.getElementById('currentUserName').textContent = username;
+            document.getElementById('currentUserAvatar').textContent = initial;
+            closeModal('loginModal');
+            layui.layer.msg('登录成功', {icon: 1});
+        }
+
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // 点击模态框外部关闭
+        document.querySelectorAll('.modal, .login-modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+        });
+        
+        // 初始化layui模块
+        layui.use('layer', function(){
+            window.layer = layui.layer;
+        });
+    </script>
+</body>
+</html>

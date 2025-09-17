@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>促销活动 - 农产品销售管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/css/layui.min.css">
+    <style>
+        /* 共用样式部分与前四个模块保持一致 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 20px 0;
+        }
+        .logo {
+            text-align: center;
+            padding: 15px 0;
+            font-size: 22px;
+            font-weight: bold;
+            border-bottom: 1px solid #3c546c;
+            margin-bottom: 20px;
+        }
+        .nav-menu {
+            list-style: none;
+        }
+        .nav-menu li {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .nav-menu li i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .nav-menu li:hover {
+            background-color: #34495e;
+        }
+        .nav-menu li.active {
+            background-color: #1abc9c;
+            border-left: 4px solid #16a085;
+        }
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #1abc9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .user-name {
+            font-weight: bold;
+        }
+        .dropdown-icon {
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 150px;
+            padding: 10px 0;
+            display: none;
+            z-index: 100;
+        }
+        .user-dropdown a {
+            display: block;
+            padding: 8px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .user-dropdown a:hover {
+            background-color: #f5f5f5;
+            color: #1abc9c;
+        }
+        .user-info:hover .dropdown-icon {
+            transform: rotate(180deg);
+        }
+        .user-info:hover .user-dropdown {
+            display: block;
+        }
+        
+        /* 促销活动特定样式 */
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .filter-box {
+            display: flex;
+            align-items: center;
+        }
+        .filter-select {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+            width: 180px;
+        }
+        .btn {
+            padding: 8px 15px;
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background-color: #16a085;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .promotion-table {
+            width: 100%;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr 1fr 1fr 0.8fr;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+        }
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr 1fr 1fr 0.8fr;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s;
+        }
+        .table-row:hover {
+            background-color: #f9f9f9;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .status-active {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-upcoming {
+            background-color: #e3f2fd;
+            color: #1565c0;
+        }
+        .status-ended {
+            background-color: #f5f5f5;
+            color: #424242;
+        }
+        .action-btn {
+            color: #1abc9c;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .action-btn:hover {
+            text-decoration: underline;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .page-btn {
+            padding: 6px 12px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .page-btn.active {
+            background-color: #1abc9c;
+            color: white;
+            border-color: #1abc9c;
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            width: 700px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+        .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .modal-title {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .promotion-products {
+            margin-top: 20px;
+        }
+        .product-item {
+            display: grid;
+            grid-template-columns: 50px 1fr 1fr 1fr;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .product-img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .discount-input {
+            width: 80px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .add-product-btn {
+            padding: 5px 10px;
+            background-color: #f5f5f5;
+            border: 1px dashed #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .add-product-btn:hover {
+            border-color: #1abc9c;
+            color: #1abc9c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <div class="logo">农产品销售系统</div>
+            <ul class="nav-menu">
+                <li><i class="layui-icon layui-icon-home"></i> 首页</li>
+                <li><i class="layui-icon layui-icon-user"></i> 用户管理</li>
+                <li><i class="layui-icon layui-icon-cart"></i> 商品管理</li>
+                <li><i class="layui-icon layui-icon-form"></i> 订单管理</li>
+                <li><i class="layui-icon layui-icon-template-1"></i> 库存管理</li>
+                <li class="active"><i class="layui-icon layui-icon-dollar"></i> 促销活动</li>
+                <li><i class="layui-icon layui-icon-chart"></i> 数据统计</li>
+                <li><i class="layui-icon layui-icon-transfer"></i> 支付管理</li>
+                <li><i class="layui-icon layui-icon-service"></i> 客户服务</li>
+                <li><i class="layui-icon layui-icon-car"></i> 物流跟踪</li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <h2>促销活动</h2>
+                <div class="user-info">
+                    <div class="user-avatar">张</div>
+                    <div class="user-name">张达铭</div>
+                    <div class="dropdown-icon">▼</div>
+                    <div class="user-dropdown">
+                        <a href="#" onclick="switchUser()">切换用户</a>
+                        <a href="#" onclick="logout()">退出登录</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 促销活动模块内容 -->
+            <div class="module-header">
+                <div class="filter-box">
+                    <select class="filter-select">
+                        <option value="">全部状态</option>
+                        <option value="active">进行中</option>
+                        <option value="upcoming">未开始</option>
+                        <option value="ended">已结束</option>
+                    </select>
+                    <input type="text" class="filter-select" placeholder="搜索活动名称">
+                    <button class="btn">筛选</button>
+                </div>
+                <button class="btn" onclick="showAddPromotionModal()">创建活动</button>
+            </div>
+
+            <div class="promotion-table">
+                <div class="table-header">
+                    <div>活动ID</div>
+                    <div>活动名称</div>
+                    <div>活动时间</div>
+                    <div>活动类型</div>
+                    <div>状态</div>
+                    <div>操作</div>
+                </div>
+                
+                <div class="table-row">
+                    <div>PROMO2023050101</div>
+                    <div>
+                        <div style="font-weight: bold;">五一特惠</div>
+                        <div style="font-size: 12px; color: #95a5a6;">全场水果8折起</div>
+                    </div>
+                    <div>
+                        <div>2025-05-01</div>
+                        <div style="font-size: 12px; color: #95a5a6;">至 2025-05-07</div>
+                    </div>
+                    <div>全场折扣</div>
+                    <div><span class="status-badge status-ended">已结束</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showPromotionDetail('PROMO2023050101')">详情</span>
+                        <span class="action-btn" style="color: #e74c3c;" onclick="showDeletePromotionConfirm('PROMO2023050101')">删除</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>PROMO2023051501</div>
+                    <div>
+                        <div style="font-weight: bold;">夏日清凉</div>
+                        <div style="font-size: 12px; color: #95a5a6;">指定商品买一送一</div>
+                    </div>
+                    <div>
+                        <div>2025-05-15</div>
+                        <div style="font-size: 12px; color: #95a5a6;">至 2025-05-31</div>
+                    </div>
+                    <div>买赠活动</div>
+                    <div><span class="status-badge status-active">进行中</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showPromotionDetail('PROMO2023051501')">详情</span>
+                        <span class="action-btn">编辑</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>PROMO2023060101</div>
+                    <div>
+                        <div style="font-weight: bold;">儿童节特惠</div>
+                        <div style="font-size: 12px; color: #95a5a6;">亲子套餐优惠</div>
+                    </div>
+                    <div>
+                        <div>2025-06-01</div>
+                        <div style="font-size: 12px; color: #95a5a6;">至 2025-06-03</div>
+                    </div>
+                    <div>套餐优惠</div>
+                    <div><span class="status-badge status-upcoming">未开始</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showPromotionDetail('PROMO2023060101')">详情</span>
+                        <span class="action-btn">编辑</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div>PROMO2023061801</div>
+                    <div>
+                        <div style="font-weight: bold;">618年中大促</div>
+                        <div style="font-size: 12px; color: #95a5a6;">全场满100减20</div>
+                    </div>
+                    <div>
+                        <div>2025-06-18</div>
+                        <div style="font-size: 12px; color: #95a5a6;">至 2025-06-20</div>
+                    </div>
+                    <div>满减活动</div>
+                    <div><span class="status-badge status-upcoming">未开始</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showPromotionDetail('PROMO2023061801')">详情</span>
+                        <span class="action-btn">编辑</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination">
+                <div class="page-btn">上一页</div>
+                <div class="page-btn active">1</div>
+                <div class="page-btn">2</div>
+                <div class="page-btn">3</div>
+                <div class="page-btn">下一页</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加促销活动模态框 -->
+    <div class="modal" id="addPromotionModal">
+        <div class="modal-content">
+            <h2 class="modal-title">创建促销活动</h2>
+            
+            <div class="form-group">
+                <label class="form-label">活动名称</label>
+                <input type="text" class="form-input" placeholder="请输入活动名称">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">活动类型</label>
+                <select class="form-select">
+                    <option value="">请选择活动类型</option>
+                    <option value="discount">折扣活动</option>
+                    <option value="full_reduction">满减活动</option>
+                    <option value="buy_gift">买赠活动</option>
+                    <option value="package">套餐优惠</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">活动时间</label>
+                <div style="display: flex; align-items: center;">
+                    <input type="date" class="form-input" style="flex: 1;">
+                    <span style="margin: 0 10px;">至</span>
+                    <input type="date" class="form-input" style="flex: 1;">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">活动描述</label>
+                <textarea class="form-textarea" placeholder="请输入活动描述"></textarea>
+            </div>
+            
+            <div class="promotion-products">
+                <h3>参与商品</h3>
+                <div class="product-item">
+                    <img src="https://via.placeholder.com/40" class="product-img" alt="商品图片">
+                    <div>
+                        <div style="font-weight: bold;">有机苹果</div>
+                        <div style="font-size: 12px; color: #95a5a6;">产地：山东烟台</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #95a5a6;">原价：¥12.8/斤</div>
+                    </div>
+                    <div>
+                        <input type="text" class="discount-input" placeholder="折扣率">
+                    </div>
+                </div>
+                
+                <div class="product-item">
+                    <img src="https://via.placeholder.com/40" class="product-img" alt="商品图片">
+                    <div>
+                        <div style="font-weight: bold;">新鲜菠菜</div>
+                        <div style="font-size: 12px; color: #95a5a6;">产地：河北张家口</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #95a5a6;">原价：¥5.5/斤</div>
+                    </div>
+                    <div>
+                        <input type="text" class="discount-input" placeholder="折扣率">
+                    </div>
+                </div>
+                
+                <div class="add-product-btn" onclick="showAddProductModal()">
+                    + 添加参与商品
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('addPromotionModal')">取消</button>
+                <button class="btn" style="margin-left: 10px;">创建活动</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 促销活动详情模态框 -->
+    <div class="modal" id="promotionDetailModal">
+        <div class="modal-content">
+            <h2 class="modal-title">促销活动详情 <span style="font-size: 14px; color: #95a5a6; font-weight: normal;">PROMO2023051501</span></h2>
+            
+            <div style="margin-bottom: 20px;">
+                <div style="font-size: 18px; font-weight: bold; margin-bottom: 5px;">夏日清凉</div>
+                <div style="color: #95a5a6;">指定商品买一送一</div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <div style="font-weight: bold; margin-bottom: 5px;">活动ID</div>
+                    <div>PROMO2023051501</div>
+                </div>
+                <div>
+                    <div style="font-weight: bold; margin-bottom: 5px;">活动类型</div>
+                    <div>买赠活动</div>
+                </div>
+                <div>
+                    <div style="font-weight: bold; margin-bottom: 5px;">开始时间</div>
+                    <div>2025-05-15 00:00</div>
+                </div>
+                <div>
+                    <div style="font-weight: bold; margin-bottom: 5px;">结束时间</div>
+                    <div>2025-05-31 23:59</div>
+                </div>
+                <div>
+                    <div style="font-weight: bold; margin-bottom: 5px;">活动状态</div>
+                    <div><span class="status-badge status-active">进行中</span></div>
+                </div>
+                <div>
+                    <div style="font-weight: bold; margin-bottom: 5px;">创建人</div>
+                    <div>张达铭</div>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <div style="font-weight: bold; margin-bottom: 5px;">活动描述</div>
+                <div style="color: #555;">活动期间，购买指定商品可享受买一送一优惠，数量有限，先到先得。</div>
+            </div>
+            
+            <div class="promotion-products">
+                <h3>参与商品</h3>
+                <div class="product-item">
+                    <img src="https://via.placeholder.com/40" class="product-img" alt="商品图片">
+                    <div>
+                        <div style="font-weight: bold;">有机苹果</div>
+                        <div style="font-size: 12px; color: #95a5a6;">产地：山东烟台</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #95a5a6;">原价：¥12.8/斤</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: bold;">买一送一</div>
+                    </div>
+                </div>
+                
+                <div class="product-item">
+                    <img src="https://via.placeholder.com/40" class="product-img" alt="商品图片">
+                    <div>
+                        <div style="font-weight: bold;">土鸡蛋</div>
+                        <div style="font-size: 12px; color: #95a5a6;">产地：湖北宜昌</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #95a5a6;">原价：¥15.0/盒</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: bold;">买一送一</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('promotionDetailModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div class="modal" id="deletePromotionConfirmModal">
+        <div class="modal-content">
+            <h2 class="modal-title">确认删除</h2>
+            <p>您确定要删除促销活动 "五一特惠" 吗？此操作不可逆。</p>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('deletePromotionConfirmModal')">取消</button>
+                <button class="btn" style="margin-left: 10px; background-color: #e74c3c;">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加商品模态框 -->
+    <div class="modal" id="addProductModal">
+        <div class="modal-content">
+            <h2 class="modal-title">添加参与商品</h2>
+            
+            <div class="form-group">
+                <label class="form-label">搜索商品</label>
+                <input type="text" class="form-input" placeholder="输入商品名称或编号">
+            </div>
+            
+            <div style="max-height: 300px; overflow-y: auto; border: 1px solid #eee; border-radius: 5px; padding: 10px;">
+                <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <img src="https://via.placeholder.com/40" class="product-img" alt="商品图片">
+                    <div style="margin-left: 10px; flex: 1;">
+                        <div style="font-weight: bold;">有机苹果</div>
+                        <div style="font-size: 12px; color: #95a5a6;">产地：山东烟台</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #95a5a6;">¥12.8/斤</div>
+                    </div>
+                    <div style="margin-left: 10px;">
+                        <button class="btn" style="padding: 5px 10px;">添加</button>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <img src="https://via.placeholder.com/40" class="product-img" alt="商品图片">
+                    <div style="margin-left: 10px; flex: 1;">
+                        <div style="font-weight: bold;">新鲜菠菜</div>
+                        <div style="font-size: 12px; color: #95a5a6;">产地：河北张家口</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #95a5a6;">¥5.5/斤</div>
+                    </div>
+                    <div style="margin-left: 10px;">
+                        <button class="btn" style="padding: 5px 10px;">添加</button>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
+                    <img src="https://via.placeholder.com/40" class="product-img" alt="商品图片">
+                    <div style="margin-left: 10px; flex: 1;">
+                        <div style="font-weight: bold;">土鸡蛋</div>
+                        <div style="font-size: 12px; color: #95a5a6;">产地：湖北宜昌</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 12px; color: #95a5a6;">¥15.0/盒</div>
+                    </div>
+                    <div style="margin-left: 10px;">
+                        <button class="btn" style="padding: 5px 10px;">添加</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeModal('addProductModal')">取消</button>
+                <button class="btn" style="margin-left: 10px;">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/layui.js"></script>
+    <script>
+        // 显示添加促销活动模态框
+        function showAddPromotionModal() {
+            document.getElementById('addPromotionModal').style.display = 'flex';
+        }
+        
+        // 显示促销活动详情模态框
+        function showPromotionDetail(promotionId) {
+            // 在实际应用中，这里会根据promotionId加载促销活动数据
+            document.getElementById('promotionDetailModal').style.display = 'flex';
+        }
+        
+        // 显示删除促销活动确认模态框
+        function showDeletePromotionConfirm(promotionId) {
+            // 在实际应用中，这里会根据promotionId获取促销活动名称
+            document.getElementById('deletePromotionConfirmModal').style.display = 'flex';
+        }
+        
+        // 显示添加商品模态框
+        function showAddProductModal() {
+            document.getElementById('addProductModal').style.display = 'flex';
+        }
+        function switchUser() {
+            if(confirm('确定要切换用户吗？')) {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // 退出登录
+        function logout() {
+            if(confirm('确定要退出登录吗？')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // 点击模态框外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+        });
+        
+        // 导航菜单点击事件
+        document.querySelectorAll('.nav-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-menu li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // 在实际应用中，这里会根据点击的菜单项加载对应模块
+                if (this.textContent.includes('首页')) {
+                    window.location.href = 'index.html';
+                } else if (this.textContent.includes('用户管理')) {
+                    window.location.href = 'member_management.html';
+                } else if (this.textContent.includes('商品管理')) {
+                    window.location.href = 'goods_management.html';
+                } else if (this.textContent.includes('订单管理')) {
+                    window.location.href = 'order_management.html';
+                } else if (this.textContent.includes('库存管理')) {
+                    window.location.href = 'stock_management.html';
+                }else if (this.textContent.includes('促销活动')) {
+                    window.location.href = 'promotion_management.html';
+                }else if (this.textContent.includes('数据统计')) {
+                    window.location.href = 'data_statistics.html';
+                }else if (this.textContent.includes('支付管理')) {
+                    window.location.href = 'payment_management.html';
+                }else if (this.textContent.includes('客户服务')) {
+                    window.location.href = 'customer_service.html';
+                }else if (this.textContent.includes('物流跟踪')) {
+                    window.location.href = 'logistics_tracking.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 农产品销售管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #1abc9c;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #loginDiv {
+            width: 400px;
+            background-color: white;
+            text-align: center;
+            color: #2c3e50;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .myinput {
+            width: 318px;
+            height: 38px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 0 15px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .myinput:focus {
+            border-color: #1abc9c;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.2);
+        }
+        .myinput.error {
+            border-color: #e74c3c;
+        }
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-bottom: 10px;
+            text-align: left;
+            padding-left: 15px;
+            display: none;
+        }
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+        .remember-me input {
+            margin-right: 5px;
+        }
+        .forgot-password {
+            color: #1abc9c;
+            text-decoration: none;
+        }
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+        button {
+            width: 318px;
+            height: 38px;
+            background-color: #1abc9c;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background-color: #16a085;
+        }
+        button:active {
+            transform: translateY(1px);
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        .system-info {
+            margin-top: 20px;
+            color: #95a5a6;
+            font-size: 12px;
+        }
+        @media (max-width: 480px) {
+            #loginDiv {
+                width: 100%;
+                max-width: 400px;
+                padding: 20px;
+            }
+            .myinput, button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loginDiv">
+        <h2>农产品销售管理系统</h2>
+        <input id="username" class="myinput" type="text" placeholder="请输入用户名" />
+        <br>
+        <input id="password" class="myinput" type="password" placeholder="请输入密码" />
+        <div id="passwordError" class="error-message">密码长度必须大于6位</div>
+        <div class="remember-forgot">
+            <label class="remember-me">
+                <input type="checkbox"/>
+                记住密码
+            </label>
+            <a href="#" class="forgot-password" onclick="forgotPassword()">忘记密码？</a>
+        </div>
+        <button id="loginBtn" onclick="login()">登录</button>
+        <div class="system-info">
+            © 2025 农产品科技有限公司 | v1.2.0
+        </div>
+    </div>
+
+    <script>
+        // 忘记密码
+        function forgotPassword() {
+            alert('忘记密码？请联系系统管理员重置密码\n联系电话：400-123-4567');
+        }
+
+        // 密码验证
+        function validatePassword(password) {
+            return password.length > 6;
+        }
+
+        // 登录功能
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const passwordError = document.getElementById('passwordError');
+            const passwordInput = document.getElementById('password');
+            
+            // 重置错误状态
+            passwordError.style.display = 'none';
+            passwordInput.classList.remove('error');
+            
+            // 验证密码长度
+            if (!validatePassword(password)) {
+                passwordError.style.display = 'block';
+                passwordInput.classList.add('error');
+                return;
+            }
+
+            // 登录成功，跳转到main.html
+            window.location.href = 'index.html';
+        }
+
+        // 回车键登录
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                login();
+            }
+        });
+
+        // 实时密码验证
+        document.getElementById('password').addEventListener('input', function() {
+            const password = this.value;
+            const passwordError = document.getElementById('passwordError');
+            
+            if (password.length > 0 && !validatePassword(password)) {
+                passwordError.style.display = 'block';
+                this.classList.add('error');
+            } else {
+                passwordError.style.display = 'none';
+                this.classList.remove('error');
+            }
+        });
+    </script>
+</body>
+</html>

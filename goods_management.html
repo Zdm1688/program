@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品管理 - 农产品销售管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/css/layui.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 20px 0;
+        }
+        .logo {
+            text-align: center;
+            padding: 15px 0;
+            font-size: 22px;
+            font-weight: bold;
+            border-bottom: 1px solid #3c546c;
+            margin-bottom: 20px;
+        }
+        .nav-menu {
+            list-style: none;
+        }
+        .nav-menu li {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .nav-menu li i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .nav-menu li:hover {
+            background-color: #34495e;
+        }
+        .nav-menu li.active {
+            background-color: #1abc9c;
+            border-left: 4px solid #16a085;
+        }
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #1abc9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .user-name {
+            font-weight: bold;
+        }
+        .dropdown-icon {
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 150px;
+            padding: 10px 0;
+            display: none;
+            z-index: 100;
+        }
+        .user-dropdown a {
+            display: block;
+            padding: 8px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .user-dropdown a:hover {
+            background-color: #f5f5f5;
+            color: #1abc9c;
+        }
+        .user-info:hover .dropdown-icon {
+            transform: rotate(180deg);
+        }
+        .user-info:hover .user-dropdown {
+            display: block;
+        }
+        /* 商品管理特定样式 */
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+        }
+        .search-input {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-right: 10px;
+            width: 250px;
+        }
+        .btn {
+            padding: 8px 15px;
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background-color: #16a085;
+        }
+        .btn-secondary {
+            background-color: #95a5a6;
+        }
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        .goods-table {
+            width: 100%;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .table-header {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr 1fr 1fr 1fr 0.8fr;
+            padding: 15px 20px;
+            background-color: #f8f9fa;
+            font-weight: bold;
+            border-bottom: 1px solid #eee;
+        }
+        .table-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr 1fr 1fr 1fr 0.8fr;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s;
+        }
+        .table-row:hover {
+            background-color: #f9f9f9;
+        }
+        .product-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .status-on {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        .status-off {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+        .action-btn {
+            color: #1abc9c;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .action-btn:hover {
+            text-decoration: underline;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .page-btn {
+            padding: 6px 12px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .page-btn.active {
+            background-color: #1abc9c;
+            color: white;
+            border-color: #1abc9c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">农产品销售系统</div>
+            <ul class="nav-menu">
+                <li onclick="navigateTo('index.html')"><i class="layui-icon layui-icon-home"></i> 首页</li>
+                <li onclick="navigateTo('member_management.html')"><i class="layui-icon layui-icon-user"></i> 用户管理</li>
+                <li class="active"><i class="layui-icon layui-icon-cart"></i> 商品管理</li>
+                <li onclick="navigateTo('order_management.html')"><i class="layui-icon layui-icon-form"></i> 订单管理</li>
+                <li onclick="navigateTo('stock_management.html')"><i class="layui-icon layui-icon-template-1"></i> 库存管理</li>
+                <li onclick="navigateTo('promotion_management.html')"><i class="layui-icon layui-icon-dollar"></i> 促销活动</li>
+                <li onclick="navigateTo('data_statistics.html')"><i class="layui-icon layui-icon-chart"></i> 数据统计</li>
+                <li onclick="navigateTo('payment_management.html')"><i class="layui-icon layui-icon-transfer"></i> 支付管理</li>
+                <li onclick="navigateTo('customer_service.html')"><i class="layui-icon layui-icon-service"></i> 客户服务</li>
+                <li onclick="navigateTo('logistics_tracking.html')"><i class="layui-icon layui-icon-car"></i> 物流跟踪</li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <h2>商品管理</h2>
+                <div class="user-info">
+                    <div class="user-avatar">张</div>
+                    <div class="user-name">张达铭</div>
+                    <div class="dropdown-icon">▼</div>
+                    <div class="user-dropdown">
+                        <a href="#" onclick="switchUser()">切换用户</a>
+                        <a href="#" onclick="logout()">退出登录</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 商品管理模块内容 -->
+            <div class="module-header">
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="搜索商品名称或编号">
+                    <button class="btn">搜索</button>
+                </div>
+                <button class="btn" onclick="showAddGoodsModal()">添加商品</button>
+            </div>
+
+            <div class="goods-table">
+                <div class="table-header">
+                    <div>图片</div>
+                    <div>商品名称</div>
+                    <div>分类</div>
+                    <div>价格</div>
+                    <div>库存</div>
+                    <div>状态</div>
+                    <div>操作</div>
+                </div>
+                
+                <div class="table-row">
+                    <div></div>
+                    <div>
+                        <div style="font-weight: bold;">有机苹果</div>
+                        <div style="font-size: 12px; color: #95a5a6;">产地：山东烟台</div>
+                    </div>
+                    <div>水果</div>
+                    <div>¥12.8/斤</div>
+                    <div>256</div>
+                    <div><span class="status-badge status-on">上架</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showEditGoodsModal('P1001')">编辑</span>
+                        <span class="action-btn" style="color: #e74c3c;" onclick="showDeleteGoodsConfirm('P1001')">删除</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div></div>
+                    <div>
+                        <div style="font-weight: bold;">新鲜菠菜</div>
+                        <div style="font-size: 12px; color: #95a5a6;">产地：河北张家口</div>
+                    </div>
+                    <div>蔬菜</div>
+                    <div>¥5.5/斤</div>
+                    <div>189</div>
+                    <div><span class="status-badge status-on">上架</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showEditGoodsModal('P1002')">编辑</span>
+                        <span class="action-btn" style="color: #e74c3c;" onclick="showDeleteGoodsConfirm('P1002')">删除</span>
+                    </div>
+                </div>
+                
+                <div class="table-row">
+                    <div></div>
+                    <div>
+                        <div style="font-weight: bold;">土鸡蛋</div>
+                        <div style="font-size: 12px; color: #95a5a6;">产地：湖北宜昌</div>
+                    </div>
+                    <div>禽蛋</div>
+                    <div>¥15.0/盒</div>
+                    <div>120</div>
+                    <div><span class="status-badge status-off">下架</span></div>
+                    <div>
+                        <span class="action-btn" onclick="showEditGoodsModal('P1003')">编辑</span>
+                        <span class="action-btn" style="color: #e74c3c;" onclick="showDeleteGoodsConfirm('P1003')">删除</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination">
+                <div class="page-btn">上一页</div>
+                <div class="page-btn active">1</div>
+                <div class="page-btn">2</div>
+                <div class="page-btn">3</div>
+                <div class="page-btn">下一页</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/layui.js"></script>
+    <script>
+        // 页面跳转功能
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        // 切换用户
+        function switchUser() {
+            if(confirm('确定要切换用户吗？')) {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // 退出登录
+        function logout() {
+            if(confirm('确定要退出登录吗？')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 导航菜单点击事件
+        document.querySelectorAll('.nav-menu li').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-menu li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // 在实际应用中，这里会根据点击的菜单项加载对应模块
+                if (this.textContent.includes('首页')) {
+                    navigateTo('index.html');
+                } else if (this.textContent.includes('用户管理')) {
+                    navigateTo('member_management.html');
+                } else if (this.textContent.includes('商品管理')) {
+                    navigateTo('goods_management.html');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

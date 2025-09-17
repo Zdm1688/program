@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>农产品销售管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/css/layui.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        body {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 240px;
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 20px 0;
+        }
+        .logo {
+            text-align: center;
+            padding: 15px 0;
+            font-size: 22px;
+            font-weight: bold;
+            border-bottom: 1px solid #3c546c;
+            margin-bottom: 20px;
+        }
+        .nav-menu {
+            list-style: none;
+        }
+        .nav-menu li {
+            padding: 12px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        .nav-menu li i {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .nav-menu li:hover {
+            background-color: #34495e;
+        }
+        .nav-menu li.active {
+            background-color: #1abc9c;
+            border-left: 4px solid #16a085;
+        }
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .user-info {
+            position: relative;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #1abc9c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .user-name {
+            font-weight: bold;
+        }
+        .dropdown-icon {
+            margin-left: 5px;
+            transition: transform 0.3s;
+        }
+        .user-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 150px;
+            padding: 10px 0;
+            display: none;
+            z-index: 100;
+        }
+        .user-dropdown a {
+            display: block;
+            padding: 8px 15px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .user-dropdown a:hover {
+            background-color: #f5f5f5;
+            color: #1abc9c;
+        }
+        .user-info:hover .dropdown-icon {
+            transform: rotate(180deg);
+        }
+        .user-info:hover .user-dropdown {
+            display: block;
+        }
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .stat-card h3 {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .quick-access {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .quick-item {
+            background: white;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .quick-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .quick-item i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #1abc9c;
+        }
+        /* 图表区域 */
+        .charts {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .chart-container {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        #salesChart, #categoryChart {
+            height: 300px;
+            width: 100%;
+        }
+        /* 公告区域 */
+        .announcements {
+            background: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .announcement-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .announcement-item:last-child {
+            border-bottom: none;
+        }
+        .announcement-item:hover {
+            background-color: #f9f9f9;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            width: 600px;
+            max-width: 90%;
+            max-height: 80%;
+            overflow-y: auto;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧导航栏 - 按照需求文档的模块名称修改 -->
+        <div class="sidebar">
+            <div class="logo">农产品销售系统</div>
+            <ul class="nav-menu">
+                <li class="active"><i class="layui-icon layui-icon-home"></i> 首页</li>
+                <li onclick="navigateTo('member_management.html')"><i class="layui-icon layui-icon-user"></i> 用户管理</li>
+                <li onclick="navigateTo('goods_management.html')"><i class="layui-icon layui-icon-cart"></i> 商品管理</li>
+                <li onclick="navigateTo('order_management.html')"><i class="layui-icon layui-icon-form"></i> 订单管理</li>
+                <li onclick="navigateTo('stock_management.html')"><i class="layui-icon layui-icon-template-1"></i> 库存管理</li>
+                <li onclick="navigateTo('promotion_management.html')"><i class="layui-icon layui-icon-dollar"></i> 促销活动</li>
+                <li onclick="navigateTo('data_statistics.html')"><i class="layui-icon layui-icon-chart"></i> 数据统计</li>
+                <li onclick="navigateTo('payment_management.html')"><i class="layui-icon layui-icon-transfer"></i> 支付管理</li>
+                <li onclick="navigateTo('customer_service.html')"><i class="layui-icon layui-icon-service"></i> 客户服务</li>
+                <li onclick="navigateTo('logistics_tracking.html')"><i class="layui-icon layui-icon-car"></i> 物流跟踪</li>
+            </ul>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <div class="header">
+                <h2>系统首页</h2>
+                <div class="user-info">
+                    <div class="user-avatar">张</div>
+                    <div class="user-name">张达铭</div>
+                    <div class="dropdown-icon">▼</div>
+                    <div class="user-dropdown">
+                        <a href="#" onclick="switchUser()">切换用户</a>
+                        <a href="#" onclick="logout()">退出登录</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据统计卡片 -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <h3>今日销售额</h3>
+                    <div class="number">¥8,652</div>
+                </div>
+                <div class="stat-card">
+                    <h3>今日订单数</h3>
+                    <div class="number">126</div>
+                </div>
+                <div class="stat-card">
+                    <h3>库存商品数</h3>
+                    <div class="number">542</div>
+                </div>
+                <div class="stat-card">
+                    <h3>新增客户</h3>
+                    <div class="number">24</div>
+                </div>
+            </div>
+
+            <!-- 快捷入口 -->
+            <div class="quick-access">
+                <div class="quick-item" onclick="navigateTo('order_management.html')">
+                    <i class="layui-icon layui-icon-form"></i>
+                    <div>新增订单</div>
+                </div>
+                <div class="quick-item" onclick="navigateTo('stock_management.html')">
+                    <i class="layui-icon layui-icon-add-circle"></i>
+                    <div>产品入库</div>
+                </div>
+                <div class="quick-item" onclick="navigateTo('member_management.html')">
+                    <i class="layui-icon layui-icon-user"></i>
+                    <div>客户管理</div>
+                </div>
+                <div class="quick-item" onclick="navigateTo('data_statistics.html')">
+                    <i class="layui-icon layui-icon-chart"></i>
+                    <div>销售报表</div>
+                </div>
+            </div>
+
+            <!-- 图表区域 -->
+            <div class="charts">
+                <div class="chart-container">
+                    <div class="chart-title">近30天销售趋势</div>
+                    <div id="salesChart"></div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">产品销售占比</div>
+                    <div id="categoryChart"></div>
+                </div>
+            </div>
+
+            <!-- 公告区域 -->
+            <div class="announcements">
+                <h3>系统公告</h3>
+                <div class="announcement-item" onclick="showAnnouncement(0)">
+                    <strong>[重要] 系统将于本周六凌晨进行维护升级</strong>
+                    <div style="color: #7f8c8d; font-size: 13px;">2025-09-10</div>
+                </div>
+                <div class="announcement-item" onclick="showAnnouncement(1)">
+                    <strong>新增农产品溯源功能，欢迎使用</strong>
+                    <div style="color: #7f8c8d; font-size: 13px;">2025-09-03</div>
+                </div>
+                <div class="announcement-item" onclick="showAnnouncement(2)">
+                    <strong>秋季农产品促销活动即将开始</strong>
+                    <div style="color: #7f8c8d; font-size: 13px;">2025-08-26</div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>农产品销售管理系统 v1.2 © 2025 农产品科技有限公司</p>
+                <p>用心做好每一款农产品，让健康走进千家万户</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公告详情模态框 -->
+    <div class="modal" id="announcementModal">
+        <div class="modal-content">
+            <h2 id="modalTitle"></h2>
+            <div id="modalDate" style="color: #7f8c8d; margin-bottom: 20px;"></div>
+            <div id="modalContent"></div>
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="closeModal()" class="layui-btn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/layui@2.6.8/dist/layui.js"></script>
+    <script>
+        // 页面跳转功能
+        function navigateTo(page) {
+            window.location.href = page;
+        }
+        
+        // 切换用户
+        function switchUser() {
+            if(confirm('确定要切换用户吗？')) {
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // 退出登录
+        function logout() {
+            if(confirm('确定要退出登录吗？')) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        // 初始化图表
+        document.addEventListener('DOMContentLoaded', function() {
+            // 销售趋势折线图
+            var salesChart = echarts.init(document.getElementById('salesChart'));
+            var salesOption = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                xAxis: {
+                    type: 'category',
+                    data: ['8-15', '8-18', '8-21', '8-24', '8-27', '8-30', '9-3', '9-6', '9-9', '9-12', '9-15']
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '¥{value}'
+                    }
+                },
+                series: [{
+                    data: [5200, 6320, 5800, 7345, 6900, 8300, 7100, 9650, 7540, 8200, 8652],
+                    type: 'line',
+                    smooth: true,
+                    itemStyle: {
+                        color: '#1abc9c'
+                    }
+                }]
+            };
+            salesChart.setOption(salesOption);
+
+            // 产品分类饼图
+            var categoryChart = echarts.init(document.getElementById('categoryChart'));
+            var categoryOption = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: 10,
+                    top: 'center'
+                },
+                series: [
+                    {
+                        name: '产品分类',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '14',
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: [
+                            {value: 35, name: '蔬菜类'},
+                            {value: 25, name: '水果类'},
+                            {value: 20, name: '粮油类'},
+                            {value: 15, name: '禽蛋类'},
+                            {value: 5, name: '其他'}
+                        ]
+                    }
+                ]
+            };
+            categoryChart.setOption(categoryOption);
+
+            // 窗口调整大小时重置图表
+            window.addEventListener('resize', function() {
+                salesChart.resize();
+                categoryChart.resize();
+            });
+        });
+
+        // 公告详情数据
+        var announcements = [
+            {
+                title: "系统将于本周六凌晨进行维护升级",
+                date: "2025-09-10",
+                content: "<p>为了提供更稳定的服务，系统将于2025年9月13日（周六）凌晨2:00-5:00进行维护升级。升级期间系统将暂停服务，请您合理安排工作。</p><p>本次升级主要内容：</p><ul><li>优化订单处理流程</li><li>增加库存预警功能</li><li>修复已知问题</li></ul><p>感谢您的理解与支持！</p>"
+            },
+            {
+                title: "新增农产品溯源功能，欢迎使用",
+                date: "2025-09-03",
+                content: "<p>系统新增农产品溯源功能，现在您可以追踪每批农产品的来源、生产过程和检验报告。</p><p>使用方法：</p><ol><li>进入产品管理页面</li><li>选择需要查看的产品</li><li>点击'溯源信息'标签页</li></ol><p>该功能有助于提高产品质量透明度，增强消费者信任。</p>"
+            },
+            {
+                title: "秋季农产品促销活动即将开始",
+                date: "2025-08-26",
+                content: "<p>为迎接秋季销售旺季，系统将于9月15日起启动秋季农产品促销活动。</p><p>活动期间：</p><ul><li>特色农产品限时折扣</li><li>批量采购额外优惠</li><li>新客户注册即送优惠券</li></ul><p>请各供应商提前准备充足库存，确保活动期间供应稳定。</p>"
+            }
+        ];
+
+        // 显示公告详情
+        function showAnnouncement(index) {
+            document.getElementById('modalTitle').innerText = announcements[index].title;
+            document.getElementById('modalDate').innerText = announcements[index].date;
+            document.getElementById('modalContent').innerHTML = announcements[index].content;
+            document.getElementById('announcementModal').style.display = 'flex';
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('announcementModal').style.display = 'none';
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('announcementModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
